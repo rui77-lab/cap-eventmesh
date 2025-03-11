@@ -10,7 +10,13 @@
         - Comment/remove the `@(requires: 'authenticated-user')`
         - Configure an approuter or generate a bearer token with the service credentials and call the function with Bearer Auth
         - Configure mock authentication to allow basic authentication
-- 
+    - The environment variables with the service description must be available locally - either through `default-env.json` or `.cdsrc-private.json` with binding
+- To test in the cloud
+    - Deploy the app by running the following commands
+        - `mbt build` - if done through BAS, this plugin is already installed, else, run `npm i -g mbt`
+        - `cf deploy mta_archives/<generated_mta>` - if done through BAS, this plugin is already installed, else it needs to be installed
+
+- Trigger an event through Event Mesh's UI
 
 ## Learn More
 Learn more at https://cap.cloud.sap/docs/get-started/.
