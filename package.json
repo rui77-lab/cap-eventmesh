@@ -7,6 +7,8 @@
   "private": true,
   "dependencies": {
     "@cap-js/hana": "^1",
+    "@sap-cloud-sdk/http-client": "^3.26.4",
+    "@sap-cloud-sdk/resilience": "^3.26.4",
     "@sap/cds": "^8",
     "@sap/xb-msg-amqp-v100": "^0.9.58",
     "@sap/xssec": "^4",
@@ -32,7 +34,23 @@
         }
       },
       "auth": "xsuaa",
-      "db": "hana"
+      "db": "hana",
+      "API_SERVICE_ORDER_SRV": {
+        "kind": "odata-v2",
+        "model": "srv/external/OP_API_SERVICE_ORDER_SRV_0001",
+        "credentials": {
+          "destination": "S48_HTTP",
+          "path": "/sap/opu/odata/sap/API_SERVICE_ORDER_SRV"
+        }
+      },
+      "c4codata": {
+        "kind": "odata-v2",
+        "model": "srv/external/ticket",
+        "credentials": {
+          "destination": "BASMigration",
+          "path": "/sap/c4c/odata/v1/c4codataapi"
+        }
+      }
     }
   }
 }
