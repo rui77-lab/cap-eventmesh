@@ -30,7 +30,7 @@
       "messaging": {
         "kind": "enterprise-messaging-shared",
         "queue": {
-          "name": "$namespace/poc"
+          "name": "$namespace/serviceorder"
         }
       },
       "auth": "xsuaa",
@@ -46,8 +46,10 @@
       "c4codata": {
         "kind": "odata-v2",
         "model": "srv/external/ticket",
+        "csrf": true,
+        "csrfInBatch": true,
         "credentials": {
-          "destination": "BASMigration",
+          "destination": "C4C_conn",
           "path": "/sap/c4c/odata/v1/c4codataapi"
         }
       }
