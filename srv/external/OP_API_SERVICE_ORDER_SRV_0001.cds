@@ -254,6 +254,7 @@ entity API_SERVICE_ORDER_SRV.A_ServiceOrder {
   @sap.label : 'Category'
   @sap.quickinfo : 'Activity Category (Communication Type)'
   ServiceDocumentCategory : String(3);
+  ZZ1_C4CTicketID_SRH: String(10);
   to_Appointment : Association to many API_SERVICE_ORDER_SRV.A_SrvcOrdAppointment {  };
   to_Confirmation : Association to many API_SERVICE_ORDER_SRV.A_ServiceOrderConfirmation {  };
   to_Defect : Association to many API_SERVICE_ORDER_SRV.A_ServiceOrderDefect {  };

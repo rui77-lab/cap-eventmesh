@@ -1,32 +1,69 @@
 // srv/admin-service.js
-const cds = require('@sap/cds')
+const cds = require('@sap/cds');
+const LOG = cds.log('eventMeshPOC')
+
 module.exports = class MyService extends cds.ApplicationService {
     async init() {
 
-        const { EventStorage, ServiceOrders, ServiceRequestCollection } = this.entities
+        const { EventStorage, ServiceOrdUserStatus, ServiceOrders, ServiceRequestCollection } = this.entities
 
         const messaging = await cds.connect.to('messaging');
         const serviceOrderService = await cds.connect.to('API_SERVICE_ORDER_SRV');
         const c4codata = await cds.connect.to('c4codata');
 
         messaging.on('acn/sbg/btp/ce/sap/s4/beh/serviceorder/v1/ServiceOrder/Changed/v1', async (msg) => {
-            console.log("I'm a message from one of the POC's Queue topic");
+            console.log("Changed");
 
-            const rowData = [
-                {
-                    eventData: msg.data
+            if (msg?.data?.ServiceOrder) {
+                const serviceOrder = await serviceOrderService.run(SELECT.one.from(ServiceOrders, {
+                    ServiceOrder: msg.data.ServiceOrder
+                }).columns(col => {
+                    col`.*`,
+                        col.to_ServiceOrdUserStatus(c => {
+                            c.SrvcOrdUserStatus
+                        })
+                }));
+
+                if (serviceOrder) {
+
+                    const ticket = await c4codata.run(SELECT.one.from(ServiceRequestCollection).columns("ObjectID", "ServiceRequestUserLifeCycleStatusCode").where({
+                        ID: serviceOrder.ZZ1_C4CTicketID_SRH
+                    }));
+
+
+                    let ticketStatus;
+                    if (serviceOrder.to_ServiceOrdUserStatus[0].SrvcOrdUserStatus === 'E0005') {
+                        ticketStatus = '5';
+                    } else if (serviceOrder.to_ServiceOrdUserStatus[0].SrvcOrdUserStatus === 'E0002') {
+                        ticketStatus = '2';
+                    } else {
+                        return;
+                    }
+
+                    const ticketUpdateProperties = {
+                        ServiceRequestUserLifeCycleStatusCode: ticketStatus
+                    }
+
+                    if (ticket.ServiceRequestUserLifeCycleStatusCode !== '5') {
+                        ticketUpdateProperties.Name = serviceOrder.ServiceOrderDescription;
+                    }
+
+                    await c4codata.run(UPDATE(ServiceRequestCollection, { ObjectID: ticket.ObjectID }).set(ticketUpdateProperties));
+                } else {
+                    LOG.error("Service order does not exist");
                 }
-            ]
-            await INSERT(rowData).into(EventStorage);
 
+                LOG.info(`Event for service order ${serviceOrder.ServiceOrder} processed`);
+            } else {
+                LOG.error("Event data does not contain serviceorder!");
+            }
         });
-
-        this.on("testFunction", async (req) => {
-            return "hello world";
-        });
-
 
         this.on("READ", ServiceOrders, async req => {
+            return await serviceOrderService.run(req.query);
+        });
+
+        this.on("READ", ServiceOrdUserStatus, async req => {
             return await serviceOrderService.run(req.query);
         });
 

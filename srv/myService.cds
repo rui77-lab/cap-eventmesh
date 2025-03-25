@@ -12,7 +12,15 @@ service MyService {
         projection on SO.A_ServiceOrder {
             ServiceOrder,
             ServiceOrderType,
-            ServiceOrderDescription
+            ServiceOrderDescription,
+            ZZ1_C4CTicketID_SRH,
+            to_ServiceOrdUserStatus
+        };
+
+    entity ServiceOrdUserStatus     as
+        projection on SO.A_ServiceOrdUserStatus {
+            ServiceOrder,
+            SrvcOrdUserStatus
         };
 
     entity ServiceRequestCollection as projection on c4codata.ServiceRequestCollection;

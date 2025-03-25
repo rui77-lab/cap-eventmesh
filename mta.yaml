@@ -27,6 +27,8 @@ modules:
       - name: EventMeshDev
       - name: cap-sbg-eventmesh-db
       - name: cap-sbg-eventmesh-auth
+      - name: cap-sbg-connectivity
+      - name: cap-sbg-destination
 
   - name: cap-sbg-eventmesh-db-deployer
     type: hdb
@@ -56,3 +58,10 @@ resources:
       config:
         xsappname: cap-sbg-eventmesh
         tenant-mode: dedicated
+  - name: cap-sbg-connectivity
+    type: org.cloudfoundry.existing-service
+  - name: cap-sbg-destination
+    type: org.cloudfoundry.existing-service
+
+
+        
